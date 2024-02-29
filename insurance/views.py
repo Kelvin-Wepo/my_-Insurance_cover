@@ -24,7 +24,7 @@ def is_customer(user):
 
 def afterlogin_view(request):
     if is_customer(request.user):
-        return redirect('customer_dashboard')
+        return redirect('customer/customer-dashboard')
     else:
         return redirect('admin_dashboard')
 
@@ -46,6 +46,7 @@ def admin_dashboard_view(request):
         'waiting_policy_holder': models.PolicyRecord.objects.filter(status='Pending').count(),
     }
     return render(request, 'insurance/admin_dashboard.html', context=dict)
+
 
 
 @login_required(login_url='adminlogin')
