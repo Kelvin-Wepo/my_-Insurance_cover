@@ -66,7 +66,7 @@ def apply_view(request,pk):
     customer = models.Customer.objects.get(user_id=request.user.id)
     policy = CMODEL.Policy.objects.get(id=pk)
     policyrecord = CMODEL.PolicyRecord()
-    policyrecord.Policy = policy
+    policyrecord.policy = policy
     policyrecord.customer = customer
     policyrecord.save()
     return redirect('history')
