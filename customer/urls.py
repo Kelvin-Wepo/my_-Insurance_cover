@@ -10,6 +10,8 @@ urlpatterns = [
 
     path('apply-policy', views.apply_policy_view,name='apply-policy'),
     path('apply/<int:pk>', views.apply_view,name='apply'),
+    path('customer/<int:customer_id>/payment/', views.payment_view, name='customer_payment'),
+
     path('history', views.history_view,name='history'),
 
     path('ask-question', views.ask_question_view,name='ask-question'),

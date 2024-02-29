@@ -11,7 +11,9 @@ from django.core.mail import send_mail
 from insurance import models as CMODEL
 from insurance import forms as CFORM
 from django.contrib.auth.models import User
-
+from django.contrib import messages
+from .models import Customer
+from .forms import PaymentForm
 
 def customerclick_view(request):
     if request.user.is_authenticated:
@@ -21,11 +23,11 @@ def customerclick_view(request):
 
 def customer_signup_view(request):
     userForm=forms.CustomerUserForm()
-    customerForm=forms.CustomerForm()
+    customerForm=forms.CustomerUserForm()
     mydict={'userForm':userForm,'customerForm':customerForm}
     if request.method=='POST':
         userForm=forms.CustomerUserForm(request.POST)
-        customerForm=forms.CustomerForm(request.POST,request.FILES)
+        customerForm=forms.CustomerUserForm(request.POST,request.FILES)
         if userForm.is_valid() and customerForm.is_valid():
             user=userForm.save()
             user.set_password(user.password)
@@ -66,6 +68,24 @@ def apply_view(request,pk):
     policyrecord.customer = customer
     policyrecord.save()
     return redirect('history')
+
+def payment_view(request, customer_id):
+    customer = Customer.objects.get(id=customer_id)
+
+    if request.method == 'POST':
+        form = PaymentForm(request.POST)
+        if form.is_valid():
+            token = form.cleaned_data['stripeToken']
+            amount = form.cleaned_data['amount']
+            if customer.process_payment(token, amount):
+                messages.success(request, 'Payment processed successfully.')
+            else:
+                messages.error(request, 'Payment processing failed.')
+            return redirect('customer_detail', customer_id=customer_id)
+    else:
+        form = PaymentForm()
+
+    return render(request, 'payment_form.html', {'form': form, 'customer': customer})
 
 def history_view(request):
     customer = models.Customer.objects.get(user_id=request.user.id)
