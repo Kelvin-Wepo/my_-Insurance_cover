@@ -11,6 +11,8 @@ from django.core.mail import send_mail
 from django.contrib.auth.models import User
 from customer import models as CMODEL
 from customer import forms as CFORM
+import africastalking
+from .models import Customer
 
 
 
@@ -26,7 +28,7 @@ def afterlogin_view(request):
     if is_customer(request.user):
         return redirect('customer/customer-dashboard')
     else:
-        return redirect('admin_dashboard')
+        return redirect('admin-dashboard')
 
 def adminclick_view(request):
     if request.user.is_authenticated:
@@ -213,12 +215,55 @@ def approve_request_view(request,pk):
     policyrecords = models.PolicyRecord.objects.get(id=pk)
     policyrecords.status='Approved'
     policyrecords.save()
+    africastalking_username = 'kerry12'
+    africastalking_api_key = 'b39c39b1548dec69f0bee899f7b8ff0ce38144276e860ad703e119fae90d7462'
+
+    user_profile, created = Customer.objects.get_or_create(user=request.user, defaults={'mobile': '+254799489045'})
+    print(user_profile.mobile)
+    
+
+    # user = request.User
+        
+    africastalking.initialize(africastalking_username, africastalking_api_key)
+    sms = africastalking.SMS
+
+    phone_number =  user_profile.mobile 
+    message = "Your policy has been approved. Thank you for choosing our insurance service!"
+    try:
+            # Send SMS to the customer
+        response = sms.send(message, [phone_number])
+        print("SMS sent to", phone_number, "Response:", response)
+    except Exception as e:
+            # Handle any errors that occur during SMS sending
+        print("Failed to send SMS to", phone_number, "Error:", str(e))
     return redirect('admin-view-policy-holder')
 
 def disapprove_request_view(request,pk):
     policyrecords = models.PolicyRecord.objects.get(id=pk)
     policyrecords.status='Disapproved'
     policyrecords.save()
+
+    africastalking_username = 'kerry12'
+    africastalking_api_key = 'b39c39b1548dec69f0bee899f7b8ff0ce38144276e860ad703e119fae90d7462'
+
+    user_profile, created = Customer.objects.get_or_create(user=request.user, defaults={'mobile': '+254799489045'})
+    print(user_profile.mobile)
+    
+
+    # user = request.User
+        
+    africastalking.initialize(africastalking_username, africastalking_api_key)
+    sms = africastalking.SMS
+
+    phone_number =  user_profile.mobile 
+    message = "Your policy has been disapproved. Try again after 6 months!"
+    try:
+            # Send SMS to the customer
+        response = sms.send(message, [phone_number])
+        print("SMS sent to", phone_number, "Response:", response)
+    except Exception as e:
+            # Handle any errors that occur during SMS sending
+        print("Failed to send SMS to", phone_number, "Error:", str(e))
     return redirect('admin-view-policy-holder')
 
 
