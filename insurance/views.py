@@ -13,44 +13,39 @@ from customer import models as CMODEL
 from customer import forms as CFORM
 
 
+
 def home_view(request):
     if request.user.is_authenticated:
-        return HttpResponseRedirect('afterlogin')  
-    return render(request,'insurance/index.html')
-
+        return HttpResponseRedirect('afterlogin')
+    return render(request, 'insurance/index.html')
 
 def is_customer(user):
-    return user.groups.filter(name='CUSTOMER').exists()
-
+    return user.groups.filter(name='customer').exists()
 
 def afterlogin_view(request):
-    if is_customer(request.user):      
-        return redirect('customer/customer-dashboard')
+    if is_customer(request.user):
+        return redirect('customer_dashboard')
     else:
-        return redirect('admin-dashboard')
-
-
+        return redirect('admin_dashboard')
 
 def adminclick_view(request):
     if request.user.is_authenticated:
         return HttpResponseRedirect('afterlogin')
     return HttpResponseRedirect('adminlogin')
 
-
 @login_required(login_url='adminlogin')
 def admin_dashboard_view(request):
-    dict={
-        'total_user':CMODEL.Customer.objects.all().count(),
-        'total_policy':models.Policy.objects.all().count(),
-        'total_category':models.Category.objects.all().count(),
-        'total_question':models.Question.objects.all().count(),
-        'total_policy_holder':models.PolicyRecord.objects.all().count(),
-        'approved_policy_holder':models.PolicyRecord.objects.all().filter(status='Approved').count(),
-        'disapproved_policy_holder':models.PolicyRecord.objects.all().filter(status='Disapproved').count(),
-        'waiting_policy_holder':models.PolicyRecord.objects.all().filter(status='Pending').count(),
+    dict = {
+        'total_user': CMODEL.Customer.objects.all().count(),
+        'total_policy': models.Policy.objects.all().count(),
+        'total_category': models.Category.objects.all().count(),
+        'total_question': models.Question.objects.all().count(),
+        'total_policy_holder': models.PolicyRecord.objects.all().count(),
+        'approved_policy_holder': models.PolicyRecord.objects.filter(status='Approved').count(),
+        'disapproved_policy_holder': models.PolicyRecord.objects.filter(status='Disapproved').count(),
+        'waiting_policy_holder': models.PolicyRecord.objects.filter(status='Pending').count(),
     }
-    return render(request,'insurance/admin_dashboard.html',context=dict)
-
+    return render(request, 'insurance/admin_dashboard.html', context=dict)
 
 
 @login_required(login_url='adminlogin')
