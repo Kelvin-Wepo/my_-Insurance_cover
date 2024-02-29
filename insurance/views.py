@@ -218,16 +218,14 @@ def approve_request_view(request,pk):
     africastalking_username = 'kerry12'
     africastalking_api_key = 'b39c39b1548dec69f0bee899f7b8ff0ce38144276e860ad703e119fae90d7462'
 
-    user_profile, created = Customer.objects.get_or_create(user=request.user, defaults={'mobile': '+254799489045'})
-    print(user_profile.mobile)
-    
-
-    # user = request.User
-        
+    #user_profile, created = Customer.objects.get(user=request.user, defaults={'mobile': '+254799489045'})
+    #print(user_profile.mobile)
+    customer= policyrecords.customer
     africastalking.initialize(africastalking_username, africastalking_api_key)
     sms = africastalking.SMS
+    #phone_number =user_profile.mobile
+    phone_number = customer.mobile
 
-    phone_number =  user_profile.mobile 
     message = "Your policy has been approved. Thank you for choosing our insurance service!"
     try:
             # Send SMS to the customer
@@ -245,9 +243,9 @@ def disapprove_request_view(request,pk):
 
     africastalking_username = 'kerry12'
     africastalking_api_key = 'b39c39b1548dec69f0bee899f7b8ff0ce38144276e860ad703e119fae90d7462'
-
-    user_profile, created = Customer.objects.get_or_create(user=request.user, defaults={'mobile': '+254799489045'})
-    print(user_profile.mobile)
+    customer= policyrecords.customer
+    #user_profile, created = Customer.objects.get_or_create(user=request.user, defaults={'mobile': '+254799489045'})
+    #print(user_profile.mobile)
     
 
     # user = request.User
@@ -255,7 +253,8 @@ def disapprove_request_view(request,pk):
     africastalking.initialize(africastalking_username, africastalking_api_key)
     sms = africastalking.SMS
 
-    phone_number =  user_profile.mobile 
+    #phone_number =  user_profile.mobile 
+    phone_number = customer.mobile
     message = "Your policy has been disapproved. Try again after 6 months!"
     try:
             # Send SMS to the customer
